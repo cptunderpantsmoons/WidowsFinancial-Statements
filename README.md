@@ -4,12 +4,16 @@ A desktop application that automates the generation of financial statements by u
 
 ## Features
 
-- **Automated Data Mapping**: AI-powered semantic matching between template labels and data accounts
+- **99.5% Accuracy Target**: Enhanced knowledge fusion approach with multi-layer validation for superior accuracy
+- **Knowledge-Based Semantic Matching**: Financial terminology database with XBRL standards and industry-specific mappings
+- **Comprehensive Financial Validation**: 50+ validation checks including GAAP compliance and formula consistency
+- **Advanced Financial Analysis**: Benchmarking, trend analysis, and risk assessment with industry comparisons
+- **Quality Assurance Metrics**: Real-time confidence scoring and quality grading for all mappings
 - **PDF Template Support**: Use any multi-page financial statement as a formatting template
 - **Multiple Data Sources**: Support for Excel (.xlsx) and PDF data files
 - **Pixel-Perfect Output**: Preserves original formatting, fonts, colors, and logos
-- **No Manual Mapping**: Intelligent LLM handles terminology variations automatically
-- **User-Friendly UI**: Three-step workflow with progress tracking
+- **Intelligent LLM Enhancement**: Failsafe LLM system for edge cases with automatic confidence scoring
+- **User-Friendly UI**: Three-step workflow with enhanced results display and validation insights
 - **Secure**: All processing in-memory, API key managed securely
 
 ## System Requirements
