@@ -1,5 +1,7 @@
 import streamlit as st
 import io
+import os
+from pathlib import Path
 from typing import Optional
 from core.template_analyzer import TemplateAnalyzer
 from core.data_handler import DataHandler
@@ -16,6 +18,101 @@ st.set_page_config(
     page_icon="📊",
     layout="wide"
 )
+
+def get_env_file_path() -> Path:
+    """Get the path to the .env file."""
+    return Path(__file__).parent.parent / ".env"
+
+def save_api_key(api_key: str):
+    """Save API key to .env file."""
+    env_path = get_env_file_path()
+    
+    try:
+        env_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        existing_content = {}
+        if env_path.exists():
+            with open(env_path, 'r') as f:
+                for line in f:
+                    if line.strip() and not line.startswith("#"):
+                        if "=" in line:
+                            key, value = line.split("=", 1)
+                            existing_content[key.strip()] = value.strip()
+        
+        existing_content["OPENROUTER_API_KEY"] = api_key
+        
+        with open(env_path, 'w') as f:
+            for key, value in existing_content.items():
+                f.write(f"{key}={value}\n")
+        
+        return True
+    except Exception as e:
+        logger.error(f"Failed to save API key: {str(e)}")
+        return False
+
+def is_api_key_configured() -> bool:
+    """Check if OpenRouter API key is configured."""
+    env_path = get_env_file_path()
+    
+    if not env_path.exists():
+        return False
+    
+    try:
+        with open(env_path, 'r') as f:
+            for line in f:
+                if line.strip().startswith("OPENROUTER_API_KEY="):
+                    value = line.split("=", 1)[1].strip()
+                    return bool(value and value != "your_api_key_here")
+    except:
+        pass
+    
+    return False
+
+def show_setup_screen():
+    """Display API key setup screen."""
+    st.title("🚀 Initial Setup Required")
+    
+    st.markdown("""
+    Welcome to the Financial Statement Generator! To get started, you need to configure your OpenRouter API key.
+    
+    ### What is OpenRouter?
+    OpenRouter provides access to various AI models for semantic data mapping in your financial statements.
+    
+    ### Getting Your API Key
+    1. Visit [openrouter.ai](https://openrouter.ai)
+    2. Sign up for a free account
+    3. Go to API Keys section
+    4. Copy your API key
+    
+    ### Paste Your API Key Below
+    """)
+    
+    api_key = st.text_input(
+        "OpenRouter API Key",
+        type="password",
+        placeholder="sk-or-...",
+        help="Your API key will be stored securely in the .env file"
+    )
+    
+    if api_key:
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("✓ Save API Key", key="save_api_key"):
+                if save_api_key(api_key):
+                    st.success("✓ API Key saved successfully!")
+                    st.info("Restarting application...")
+                    st.rerun()
+                else:
+                    st.error("Failed to save API key. Please try again.")
+        
+        with col2:
+            st.link_button(
+                "Get API Key",
+                "https://openrouter.ai",
+                use_container_width=True
+            )
+    else:
+        st.warning("Please enter your API key to continue.")
 
 def initialize_session_state():
     """Initialize session state variables."""
@@ -198,11 +295,57 @@ def step3_generate():
             st.session_state.step = 2
             st.rerun()
 
+def show_settings_button():
+    """Show settings button to change API key."""
+    if st.button("⚙️ Settings", key="settings_button"):
+        st.session_state.show_settings = True
+
+def show_api_key_modal():
+    """Show modal to update API key."""
+    if st.session_state.get("show_settings", False):
+        st.markdown("---")
+        st.subheader("⚙️ Settings")
+        
+        st.markdown("### Update API Key")
+        new_api_key = st.text_input(
+            "New OpenRouter API Key",
+            type="password",
+            placeholder="sk-or-...",
+            key="settings_api_key"
+        )
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("✓ Save New Key", key="save_new_key"):
+                if new_api_key:
+                    if save_api_key(new_api_key):
+                        st.success("✓ API Key updated successfully!")
+                        st.session_state.show_settings = False
+                        st.rerun()
+                    else:
+                        st.error("Failed to save API key.")
+                else:
+                    st.warning("Please enter an API key.")
+        
+        with col2:
+            if st.button("✕ Cancel", key="cancel_settings"):
+                st.session_state.show_settings = False
+                st.rerun()
+
 def main():
     """Main application."""
+    
+    if not is_api_key_configured():
+        show_setup_screen()
+        return
+    
     initialize_session_state()
     
     st.title("📊 Financial Statement Generator")
+    
+    col1, col2 = st.columns([10, 1])
+    with col2:
+        show_settings_button()
     
     st.markdown("""
     Transform your financial statements automatically using AI-powered data mapping.
@@ -212,6 +355,8 @@ def main():
     
     **Privacy Notice:** Financial data is processed securely and sent to OpenRouter AI API for analysis.
     """)
+    
+    show_api_key_modal()
     
     st.divider()
     
