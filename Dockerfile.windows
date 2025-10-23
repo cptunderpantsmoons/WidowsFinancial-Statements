@@ -1,0 +1,24 @@
+FROM mcr.microsoft.com/windows/servercore:ltsc2022
+
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+# Install Python 3.11
+RUN Invoke-WebRequest -Uri "https://www.python.org/ftp/python/3.11.2/python-3.11.2-amd64.exe" -OutFile "python-installer.exe"; \
+    Start-Process python-installer.exe -ArgumentList "/quiet InstallAllUsers=1 PrependPath=1" -Wait; \
+    Remove-Item python-installer.exe
+
+# Set working directory
+WORKDIR /app
+
+# Copy project files
+COPY . .
+
+# Install dependencies
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt
+
+# Build executable
+RUN python build.py
+
+# Output location
+CMD ["cmd", "/c", "echo Build complete. Executable at: dist\\FinancialStatementGenerator.exe"]
