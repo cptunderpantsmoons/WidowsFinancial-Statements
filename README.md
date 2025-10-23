@@ -38,14 +38,28 @@ A desktop application that automates the generation of financial statements by u
 
 ## Setup
 
-### 1. Get an OpenRouter API Key
+### Automatic Setup (Recommended)
 
-1. Visit [openrouter.ai](https://openrouter.ai)
-2. Sign up for a free account
-3. Navigate to API Keys section
-4. Copy your API key
+1. Run the application for the first time:
+   ```bash
+   python -m streamlit run src/app.py
+   ```
 
-### 2. Configure Environment
+2. Application shows setup screen asking for OpenRouter API key
+
+3. Get your API key:
+   - Visit [openrouter.ai](https://openrouter.ai)
+   - Sign up for a free account
+   - Go to API Keys section
+   - Copy your API key
+
+4. Paste API key into the setup screen and click "Save API Key"
+
+5. Application automatically saves and restarts
+
+### Manual Setup (Alternative)
+
+If you prefer to configure manually:
 
 1. Copy `.env.example` to `.env`:
    ```bash
@@ -55,14 +69,16 @@ A desktop application that automates the generation of financial statements by u
 2. Edit `.env` and add your API key:
    ```
    OPENROUTER_API_KEY=your_api_key_here
-   ```
-
-3. (Optional) Adjust other settings:
-   ```
    LOG_LEVEL=INFO
    MAX_FILE_SIZE_MB=100
    API_TIMEOUT_SECONDS=60
    ```
+
+3. Run the application
+
+### Update API Key Later
+
+Click the **⚙️ Settings** button in the top-right corner anytime to update your API key.
 
 ## Usage
 

@@ -48,7 +48,7 @@ This implementation provides a complete, production-ready Financial Statement Ge
 - Python 3.10 or higher
 - pip package manager
 - Virtual environment (recommended)
-- OpenRouter API key
+- Internet connection (for OpenRouter API)
 
 ### Installation Steps
 
@@ -73,22 +73,26 @@ This implementation provides a complete, production-ready Financial Statement Ge
    pip install -r requirements.txt
    ```
 
-4. **Configure API Key**
+4. **Run Application**
    ```bash
-   # Create .env file from example
-   copy .env.example .env   # Windows
-   cp .env.example .env     # macOS/Linux
-   
-   # Edit .env and add your OpenRouter API key
-   # OPENROUTER_API_KEY=your_key_here
+   python -m streamlit run src/app.py
    ```
-
-5. **Create Logs Directory**
-   ```bash
-   mkdir logs
-   ```
+   On first run, the application will:
+   - Create necessary directories (logs/)
+   - Create .env file from template
+   - Show setup screen asking for API key
+   - Guide you to get OpenRouter API key
+   - Save configuration automatically
 
 ## Running the Application
+
+### First Run - Setup Screen
+On first run, the application shows a setup screen that:
+1. Explains what OpenRouter is
+2. Provides instructions to get an API key
+3. Lets you paste your API key directly
+4. Saves it securely to .env file
+5. Automatically restarts the application
 
 ### Development Mode
 ```bash
@@ -99,6 +103,7 @@ This starts a local web server:
 - Opens automatically in your default browser
 - Accessible at: `http://localhost:8501`
 - Hot-reload enabled (changes apply immediately)
+- ⚙️ Settings button to update API key anytime
 
 ### Using the Application
 
@@ -207,6 +212,30 @@ Net Income                 500000
 - Account names and values clearly visible
 - Can be tabular or line format
 - Application attempts to parse structure
+
+## Managing Configuration
+
+### Update API Key
+Click the **⚙️ Settings** button in the top-right corner of the application to:
+- Update your OpenRouter API key
+- Change to a different API key
+- No restart needed - changes apply immediately
+
+### Using Command Line to Set API Key
+Set via environment variable (doesn't save to .env):
+```bash
+export OPENROUTER_API_KEY=your_key_here  # macOS/Linux
+set OPENROUTER_API_KEY=your_key_here     # Windows
+```
+
+### Editing .env Manually
+Edit the `.env` file in the project root directory directly:
+```
+OPENROUTER_API_KEY=your_key_here
+LOG_LEVEL=INFO
+MAX_FILE_SIZE_MB=100
+API_TIMEOUT_SECONDS=60
+```
 
 ## Customization
 
