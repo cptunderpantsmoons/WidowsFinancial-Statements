@@ -1,14 +1,16 @@
 """
-Build script to create a Windows .exe executable using PyInstaller.
+Build script to create an executable using PyInstaller.
+Supports Windows, Linux, and macOS platforms.
 """
 import os
 import sys
 import shutil
 import subprocess
+import platform
 from pathlib import Path
 
 def build_executable():
-    """Build the Windows executable."""
+    """Build the executable for the current platform."""
     
     project_root = Path(__file__).parent
     dist_path = project_root / "dist"
@@ -16,13 +18,13 @@ def build_executable():
     
     if dist_path.exists():
         shutil.rmtree(dist_path)
-        print(f"Removed existing dist directory")
+        print("Removed existing dist directory")
     
     if build_path.exists():
         shutil.rmtree(build_path)
-        print(f"Removed existing build directory")
+        print("Removed existing build directory")
     
-    print("Building executable with PyInstaller...")
+    print(f"Building executable for {platform.system()}...")
     
     cmd = [
         sys.executable,
@@ -40,6 +42,8 @@ def build_executable():
         "--hidden-import=openpyxl",
         "--hidden-import=requests",
         "--collect-all=streamlit",
+        "--add-data=Finance Knowledge:Finance Knowledge",
+        "--add-data=config:config",
         str(project_root / "src" / "main.py"),
     ]
     
@@ -48,10 +52,21 @@ def build_executable():
     result = subprocess.run(cmd, cwd=str(project_root))
     
     if result.returncode == 0:
-        exe_path = dist_path / "FinancialStatementGenerator.exe"
+        exe_extensions = {
+            "Windows": ".exe",
+            "Linux": "",
+            "Darwin": ".app"
+        }
+        exe_ext = exe_extensions.get(platform.system(), "")
+        exe_name = f"FinancialStatementGenerator{exe_ext}"
+        
+        exe_path = dist_path / exe_name if exe_ext else dist_path / "FinancialStatementGenerator"
+        
         if exe_path.exists():
+            file_size_mb = exe_path.stat().st_size / (1024*1024) if exe_path.is_file() else "N/A"
             print(f"\n✓ Executable created successfully: {exe_path}")
-            print(f"  File size: {exe_path.stat().st_size / (1024*1024):.1f} MB")
+            if isinstance(file_size_mb, float):
+                print(f"  File size: {file_size_mb:.1f} MB")
             return True
         else:
             print("✗ Executable not found after build")

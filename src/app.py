@@ -1,8 +1,13 @@
+import sys
 import streamlit as st
 import io
 import os
 from pathlib import Path
 from typing import Optional
+
+sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from core.template_analyzer import TemplateAnalyzer
 from core.data_handler import DataHandler
 from core.enhanced_ai_processor import EnhancedAIProcessor
