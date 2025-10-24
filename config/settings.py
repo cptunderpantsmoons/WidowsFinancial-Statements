@@ -19,7 +19,9 @@ MAX_PDF_PAGES = 15
 ALLOWED_FILE_EXTENSIONS = {".pdf", ".xlsx", ".xls"}
 
 # Processing Configuration
-API_TIMEOUT_SECONDS = int(os.getenv("API_TIMEOUT_SECONDS", "60"))
+# API_TIMEOUT_SECONDS: None for unlimited timeout, or set a value in seconds
+_timeout_env = os.getenv("API_TIMEOUT_SECONDS")
+API_TIMEOUT_SECONDS = int(_timeout_env) if _timeout_env else None
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 CACHE_ENABLED = True
 
